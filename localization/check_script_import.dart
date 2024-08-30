@@ -8,7 +8,7 @@ Future<void> checkImport() async {
   //   return;
   // }
 
-  final content = '''
+  const content = '''
 // lib/Localization/import/SPLocalization.dart
 
 class SPLocalization {

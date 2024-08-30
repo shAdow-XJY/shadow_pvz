@@ -2,8 +2,12 @@
 
 A new Flutter project.
 
-## Asset Check Script
+## Check Script
 ```
+Asset :
 flutter run check_script/check_script.dart
+
+Localization:
+flutter run localization/check_script.dart
 ```
 
