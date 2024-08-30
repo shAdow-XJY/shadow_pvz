@@ -1,5 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'Localization/import/SPLocalization.dart';
+
 void main() {
+  Locale locale = PlatformDispatcher.instance.locale;
+  SPLocalization().locale = locale.toString();
   runApp(const MyApp());
 }
 
@@ -10,8 +15,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: sPSHome.title,
+      home: MyHomePage(title: sPSHome.subtitle),
     );
   }
 }
