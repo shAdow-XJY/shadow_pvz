@@ -1,3 +1,3 @@
 class SPAssetAudio {
-  static String get bgm => 'assets/audio/bgm.mp3';
+  static String get bgm => 'bgm.mp3';
 }

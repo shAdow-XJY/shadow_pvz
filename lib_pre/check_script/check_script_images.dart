@@ -12,7 +12,7 @@ Future<void> checkImages() async {
   buffer.writeln('class SPAssetImages {');
   for (var file in audioFiles) {
     final fileName = path.basenameWithoutExtension(file.path);
-    final assetPath = 'assets/images/${path.basename(file.path)}';
+    final assetPath = path.basename(file.path);
     buffer.writeln('  static String get $fileName => \'$assetPath\';');
   }
   buffer.writeln('}');
