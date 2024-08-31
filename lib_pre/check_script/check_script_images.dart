@@ -22,7 +22,7 @@ Future<void> checkImages() async {
 void _generateImagesEntries(Directory dir, StringBuffer buffer, String prefix) {
   final entities = dir.listSync();
   for (var entity in entities) {
-    if (entity is File) {
+    if (entity is File && !path.basename(entity.path).startsWith('.')) {
       final assetPath = path.relative(entity.path, from: 'assets/images');
       final getterName = _generateGetterName(assetPath);
       buffer.writeln('  static String get $getterName => \'$assetPath\';');
