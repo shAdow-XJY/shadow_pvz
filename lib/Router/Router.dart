@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../Page/Game/SPGameKylinHomePage.dart';
 import '../Page/SPHomePage.dart';
 import '../Page/SPSplashPage.dart';
 
@@ -7,6 +8,7 @@ import '../Page/SPSplashPage.dart';
 enum GlobalRoutes {
   splashPage,
   homePage,
+  kylinHomePage
 }
 
 /// 配置路由
@@ -15,6 +17,7 @@ final _routes = {
   /// 不用传参的写法
   GlobalRoutes.splashPage.name: (context) => const SPSplashPage(),
   GlobalRoutes.homePage.name: (context) => const SPHomePage(),
+  GlobalRoutes.kylinHomePage.name: (context) => const SPGameKylinHomePage(),
 };
 
 extension _GlobalRoutesExtension on GlobalRoutes {

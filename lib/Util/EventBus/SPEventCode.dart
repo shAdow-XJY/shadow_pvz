@@ -1,0 +1,4 @@
+enum SPEventCode {
+  mapEnterBuilding,
+  backToMapHome,
+}

@@ -5,11 +5,14 @@ import 'package:flame_lottie/flame_lottie.dart';
 import 'package:flame/game.dart';
 
 import '../../../Util/Asset/SPAsset.dart';
+import '../../../Util/EventBus/SPEventBus.dart';
 
 class SPGameKylinHome extends FlameGame with TapDetector {
   late LottieComponent _loadingAnimation;
   late SpriteComponent _startButton;
   late SpriteComponent _musicButton;
+  late SpriteComponent _closeButton;
+
   bool _isMusicOn = true;
 
   //
@@ -56,7 +59,7 @@ class SPGameKylinHome extends FlameGame with TapDetector {
 
     // 开始游戏按钮
     _startButton = SpriteComponent()
-      ..sprite = await loadSprite(SPAssetImages.startButtonOfSplash)
+      ..sprite = await loadSprite(SPAssetImages.startButtonOfCommon)
       ..size = Vector2(80, 80)
       ..anchor = Anchor.center
       ..position =
@@ -65,12 +68,20 @@ class SPGameKylinHome extends FlameGame with TapDetector {
     // 音乐开关按钮
     _musicButton = SpriteComponent()
       ..sprite = await loadSprite(_isMusicOn
-          ? SPAssetImages.musicOnButtonOfSplash
-          : SPAssetImages.musicOffButtonOfSplash)
+          ? SPAssetImages.musicOnButtonOfCommon
+          : SPAssetImages.musicOffButtonOfCommon)
       ..size = Vector2(50, 50)
       ..anchor = Anchor.center
       ..position = Vector2(
           size.x * 0.9, size.y * 0.9); // Use visible instead of isVisible
+
+    // Close button
+    _closeButton = SpriteComponent()
+      ..sprite = await loadSprite(SPAssetImages.closeButtonOfCommon) // Replace with your close button image
+      ..size = Vector2(50, 50)
+      ..anchor = Anchor.topLeft
+      ..position = Vector2(10, 10); // Adjust position as needed
+    add(_closeButton);
 
     // 异步延迟 1.5 秒
     Future.delayed(const Duration(seconds: 1, milliseconds: 500)).then((_) {
@@ -93,7 +104,10 @@ class SPGameKylinHome extends FlameGame with TapDetector {
 
   @override
   void onTapDown(TapDownInfo info) {
-    if (_isLoadDone) {
+    if (_closeButton.containsPoint(info.eventPosition.global)) {
+      _closeGame();
+    }
+    else if (_isLoadDone) {
       if (_startButton.containsPoint(info.eventPosition.global)) {
         // 开始游戏
         _startGame();
@@ -104,10 +118,15 @@ class SPGameKylinHome extends FlameGame with TapDetector {
   }
 
   void _startGame() {
-    FlameAudio.bgm.stop();
+    // FlameAudio.bgm.stop();
     // 移除所有组件
-    removeAll(children);
+    // removeAll(children);
     // add(SPMap());
+  }
+
+  void _closeGame() {
+    FlameAudio.bgm.stop();
+    eventBus.fire(SPBackToMapHomeEvent()); // Fire game close event
   }
 
   Future<void> _toggleMusic() async {
@@ -116,11 +135,11 @@ class SPGameKylinHome extends FlameGame with TapDetector {
     if (_isMusicOn) {
       FlameAudio.bgm.resume();
       _musicButton.sprite =
-      await loadSprite(SPAssetImages.musicOnButtonOfSplash);
+      await loadSprite(SPAssetImages.musicOnButtonOfCommon);
     } else {
       FlameAudio.bgm.pause();
       _musicButton.sprite =
-      await loadSprite(SPAssetImages.musicOffButtonOfSplash);
+      await loadSprite(SPAssetImages.musicOffButtonOfCommon);
     }
   }
 }

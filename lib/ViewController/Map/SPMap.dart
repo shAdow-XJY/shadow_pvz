@@ -1,13 +1,11 @@
 import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
+import 'package:shadow_pvz/Util/EventBus/SPEventBus.dart';
 import 'package:shadow_pvz/ViewModel/Map/import/SPMapViewModel.dart';
 
 import '../../View/Map/import/SPMapView.dart';
-import '../Game/GameEntry.dart';
 
 class SPMap extends Component with HasGameRef {
   late Sprite _mapSprite;
@@ -50,20 +48,6 @@ class SPMap extends Component with HasGameRef {
 
   // Callback function to handle building taps
   void _handleBuildingTap(SPVMBuildingType type) {
-    switch (type) {
-      case SPVMBuildingType.house:
-        // replaceRootWidget
-        // // Transition to Kylin game module
-        // Navigator.push(
-        //   _buildContext, // You'll need to get the context here
-        //   MaterialPageRoute(builder: (context) => GameWidget(game: SPGameKylinHome())),
-        // );
-
-        break;
-      case SPVMBuildingType.school:
-      // Handle school tap
-        print('School tapped!');
-        break;
-    }
+    eventBus.fire(SPMapEnterBuildingEvent(type));
   }
 }
