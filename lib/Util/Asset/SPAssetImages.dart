@@ -5,4 +5,7 @@ class SPAssetImages {
   static String get musicOffButtonOfSplash => 'Splash/musicOffButton.png';
   static String get startButtonOfSplash => 'Splash/startButton.png';
   static String get background => 'background.jpg';
+  static String get backgroundOfMap => 'Map/background.jpg';
+  static String get schoolOfBuildingOfMap => 'Map/Building/school.png';
+  static String get houseOfBuildingOfMap => 'Map/Building/house.png';
 }

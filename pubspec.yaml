@@ -30,6 +30,8 @@ flutter:
     - assets/images/
     - assets/images/Home/
     - assets/images/Splash/
+    - assets/images/Map/
+    - assets/images/Map/Building/
     - assets/audio/
     - assets/audio/Home/
     - assets/audio/Splash/

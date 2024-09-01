@@ -5,9 +5,10 @@ import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_lottie/flame_lottie.dart';
 import 'package:shadow_pvz/Util/Asset/SPAssetLottie.dart';
+import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
 import '../../Util/Asset/SPAsset.dart';
-
+import '../Map/SPMap.dart';
 
 class SPSplash extends FlameGame with TapDetector {
   late LottieComponent _loadingAnimation;
@@ -16,7 +17,8 @@ class SPSplash extends FlameGame with TapDetector {
   bool _isMusicOn = true;
 
   //
-  bool _isLoadingAll = true;
+  bool _isLoadDone = false;
+  bool _isLoadingTime = true;
   bool _isLoadingImages = true;
   bool _isLoadingAudio = true;
 
@@ -31,7 +33,8 @@ class SPSplash extends FlameGame with TapDetector {
     ));
 
     // 加载动画
-    final loadingAsset = await loadLottie(Lottie.asset(SPAssetLottie.loadingOfCommon));
+    final loadingAsset =
+        await loadLottie(Lottie.asset(SPAssetLottie.loadingOfCommon));
     _loadingAnimation = LottieComponent(
       loadingAsset,
       size: Vector2.all(200),
@@ -50,70 +53,86 @@ class SPSplash extends FlameGame with TapDetector {
       SPAssetImages.musicOnButtonOfSplash,
       SPAssetImages.musicOffButtonOfSplash,
       // ... 其他需要预加载的图片资源
-    ]).whenComplete((){
-      // TODO: refresh
+    ]).whenComplete(() {
       _isLoadingImages = false;
     });
 
     FlameAudio.audioCache.loadAll([
       SPAssetAudio.bgmOfHome,
       // ... 其他需要预加载的音频资源
-    ]).whenComplete((){
+    ]).whenComplete(() {
       _isLoadingAudio = false;
     });
 
-
-
-// 开始游戏按钮
+    // 开始游戏按钮
     _startButton = SpriteComponent()
       ..sprite = await loadSprite(SPAssetImages.startButtonOfSplash)
-      ..size = Vector2(200, 80)
+      ..size = Vector2(80, 80)
       ..anchor = Anchor.center
-      ..position = Vector2(size.x / 2, size.y * 0.8); // Use visible instead of isVisible
+      ..position =
+          Vector2(size.x / 2, size.y * 0.8); // Use visible instead of isVisible
 
-// 音乐开关按钮
+    // 音乐开关按钮
     _musicButton = SpriteComponent()
-      ..sprite = await loadSprite(_isMusicOn ? SPAssetImages.musicOnButtonOfSplash : SPAssetImages.musicOffButtonOfSplash)
+      ..sprite = await loadSprite(_isMusicOn
+          ? SPAssetImages.musicOnButtonOfSplash
+          : SPAssetImages.musicOffButtonOfSplash)
       ..size = Vector2(50, 50)
       ..anchor = Anchor.center
-      ..position = Vector2(size.x * 0.9, size.y * 0.9); // Use visible instead of isVisible
+      ..position = Vector2(
+          size.x * 0.9, size.y * 0.9); // Use visible instead of isVisible
 
+    // 异步延迟 2.5 秒
+    Future.delayed(const Duration(seconds: 2, milliseconds: 500)).then((_) {
+      _isLoadingTime = false;
+    });
   }
 
   @override
   void update(double dt) {
     super.update(dt);
 
-    // TODO: 只調用一次
-    if (!_isLoadingAudio && !_isLoadingImages && _isLoadingAll)
-      {
-        _isLoadingAll = false;
-        add(_startButton);
-        add(_musicButton);
-        // 资源加载完成后
-        _loadingAnimation.removeFromParent();      }
+    if (!_isLoadDone && !_isLoadingTime && !_isLoadingAudio && !_isLoadingImages) {
+      SPLogger.d('// 资源加载完成后，顯示按鈕');
+      _isLoadDone = true;
+      add(_startButton);
+      add(_musicButton);
+      // 资源加载完成后
+      _loadingAnimation.removeFromParent();
+    }
   }
 
   @override
   void onTapDown(TapDownInfo info) {
-    if (!_isLoadingAll) {
+    if (_isLoadDone) {
       if (_startButton.containsPoint(info.eventPosition.global)) {
         // 开始游戏
-        print('Start Game!');
+        _startGame();
       } else if (_musicButton.containsPoint(info.eventPosition.global)) {
         _toggleMusic(); // Call async function to toggle music
       }
     }
   }
 
-  Future<void> _toggleMusic() async { // Separate async function
+  void _startGame() {
+    FlameAudio.bgm.stop();
+    // 移除所有组件
+    removeAll(children);
+    // 添加地图组件
+    add(SPMap());
+  }
+
+  Future<void> _toggleMusic() async {
+    // Separate async function
     _isMusicOn = !_isMusicOn;
     if (_isMusicOn) {
       FlameAudio.bgm.resume();
-      _musicButton.sprite = await loadSprite(SPAssetImages.musicOnButtonOfSplash);
+      _musicButton.sprite =
+          await loadSprite(SPAssetImages.musicOnButtonOfSplash);
     } else {
       FlameAudio.bgm.pause();
-      _musicButton.sprite = await loadSprite(SPAssetImages.musicOffButtonOfSplash);
+      _musicButton.sprite =
+          await loadSprite(SPAssetImages.musicOffButtonOfSplash);
     }
   }
 }

@@ -42,6 +42,6 @@ String _generateGetterName(String assetPath) {
     final nameParts = parts.map((part) => part.replaceAll(RegExp(r'[^a-zA-Z0-9_]'), '.'));
     final reversedParts = nameParts.toList().reversed;
     final firstPart = path.basenameWithoutExtension(reversedParts.first); // 去除文件后缀
-    return '${firstPart}Of${reversedParts.skip(1).join('')}';
+    return '${firstPart}Of${reversedParts.skip(1).join('Of')}';
   }
 }
