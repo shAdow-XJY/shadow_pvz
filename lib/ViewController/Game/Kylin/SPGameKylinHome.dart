@@ -1,16 +1,12 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame/game.dart';
-import 'package:flame/input.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_lottie/flame_lottie.dart';
-import 'package:shadow_pvz/Util/Asset/SPAssetLottie.dart';
-import 'package:shadow_pvz/Util/Log/SPLogger.dart';
+import 'package:flame/game.dart';
 
-import '../../Util/Asset/SPAsset.dart';
-import '../Map/SPMap.dart';
+import '../../../Util/Asset/SPAsset.dart';
 
-class SPSplash extends FlameGame with TapDetector {
+class SPGameKylinHome extends FlameGame with TapDetector {
   late LottieComponent _loadingAnimation;
   late SpriteComponent _startButton;
   late SpriteComponent _musicButton;
@@ -26,7 +22,7 @@ class SPSplash extends FlameGame with TapDetector {
   Future<void> onLoad() async {
     // 背景图片
     add(SpriteComponent(
-      sprite: await loadSprite(SPAssetImages.backgroundOfSplash),
+      sprite: await loadSprite(SPAssetImages.backgroundOfKylinOfGame),
       size: size,
       position: size / 2,
       anchor: Anchor.center,
@@ -34,7 +30,7 @@ class SPSplash extends FlameGame with TapDetector {
 
     // 加载动画
     final loadingAsset =
-        await loadLottie(Lottie.asset(SPAssetLottie.loadingOfCommon));
+    await loadLottie(Lottie.asset(SPAssetLottie.gameLoadingOfCommon));
     _loadingAnimation = LottieComponent(
       loadingAsset,
       size: Vector2.all(200),
@@ -45,21 +41,15 @@ class SPSplash extends FlameGame with TapDetector {
 
     // 背景音乐
     FlameAudio.bgm.initialize();
-    await FlameAudio.bgm.play(SPAssetAudio.bgmOfSplash);
+    await FlameAudio.bgm.play(SPAssetAudio.bgmOfKylinOfGame);
 
     // 预加载资源
     images.loadAll([
-      SPAssetImages.startButtonOfSplash,
-      SPAssetImages.musicOnButtonOfSplash,
-      SPAssetImages.musicOffButtonOfSplash,
-      // ... 其他需要预加载的图片资源
     ]).whenComplete(() {
       _isLoadingImages = false;
     });
 
     FlameAudio.audioCache.loadAll([
-      SPAssetAudio.bgmOfHome,
-      // ... 其他需要预加载的音频资源
     ]).whenComplete(() {
       _isLoadingAudio = false;
     });
@@ -70,7 +60,7 @@ class SPSplash extends FlameGame with TapDetector {
       ..size = Vector2(80, 80)
       ..anchor = Anchor.center
       ..position =
-          Vector2(size.x / 2, size.y * 0.8); // Use visible instead of isVisible
+      Vector2(size.x / 2, size.y * 0.8); // Use visible instead of isVisible
 
     // 音乐开关按钮
     _musicButton = SpriteComponent()
@@ -82,8 +72,8 @@ class SPSplash extends FlameGame with TapDetector {
       ..position = Vector2(
           size.x * 0.9, size.y * 0.9); // Use visible instead of isVisible
 
-    // 异步延迟 2.5 秒
-    Future.delayed(const Duration(seconds: 2, milliseconds: 500)).then((_) {
+    // 异步延迟 1.5 秒
+    Future.delayed(const Duration(seconds: 1, milliseconds: 500)).then((_) {
       _isLoadingTime = false;
     });
   }
@@ -93,7 +83,6 @@ class SPSplash extends FlameGame with TapDetector {
     super.update(dt);
 
     if (!_isLoadDone && !_isLoadingTime && !_isLoadingAudio && !_isLoadingImages) {
-      SPLogger.d('// 资源加载完成后，顯示按鈕');
       _isLoadDone = true;
       add(_startButton);
       add(_musicButton);
@@ -118,8 +107,7 @@ class SPSplash extends FlameGame with TapDetector {
     FlameAudio.bgm.stop();
     // 移除所有组件
     removeAll(children);
-    // 添加地图组件
-    add(SPMap());
+    // add(SPMap());
   }
 
   Future<void> _toggleMusic() async {
@@ -128,11 +116,11 @@ class SPSplash extends FlameGame with TapDetector {
     if (_isMusicOn) {
       FlameAudio.bgm.resume();
       _musicButton.sprite =
-          await loadSprite(SPAssetImages.musicOnButtonOfSplash);
+      await loadSprite(SPAssetImages.musicOnButtonOfSplash);
     } else {
       FlameAudio.bgm.pause();
       _musicButton.sprite =
-          await loadSprite(SPAssetImages.musicOffButtonOfSplash);
+      await loadSprite(SPAssetImages.musicOffButtonOfSplash);
     }
   }
 }

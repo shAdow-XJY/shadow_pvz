@@ -7,6 +7,7 @@ import '../../ViewModel/Map/SPVMBuilding.dart';
 class SPBuildingView extends SpriteComponent with TapCallbacks {
   final void Function(SPVMBuildingType) onTap;
   final SPVMBuildingType type;
+  late final String _imagePath; // Store the determined path
 
   SPBuildingView({
     required super.position,
@@ -15,16 +16,16 @@ class SPBuildingView extends SpriteComponent with TapCallbacks {
     required this.onTap,
     required this.type,
   }) : super(size: size ?? Vector2(50, 50)) {
-    _init(imagePath);
+    _init(imagePath, type);
   }
 
-  Future<void> _init(String? imagePath) async {
-    if (imagePath != null) {
-      sprite = Sprite(await Flame.images.load(imagePath));
-    } else {
-      final path = getImagePathForType(type);
-      sprite = Sprite(await Flame.images.load(path));
-    }
+  void _init(String? imagePath, SPVMBuildingType type) {
+    _imagePath = imagePath ?? getImagePathForType(type);
+  }
+
+  @override
+  Future<void> onLoad() async {
+    sprite = Sprite(await Flame.images.load(_imagePath));
   }
 
   @override
