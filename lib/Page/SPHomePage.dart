@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../Router/Router.dart';
 import '../Util/EventBus/SPEventBus.dart';
-import '../ViewController/Game/GameEntry.dart';
 import '../ViewController/Splash/SPMapSplash.dart';
 import '../ViewModel/Map/import/SPMapViewModel.dart';
 

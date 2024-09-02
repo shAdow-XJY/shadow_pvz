@@ -40,7 +40,7 @@ class _SPGameKylinHomePageState extends State<SPGameKylinHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GameWidget(game: SPGameKylinHome()),
+      body: Focus(child: GameWidget(game: SPGameKylinHome()),),
     );
   }
 }

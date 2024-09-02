@@ -3,11 +3,13 @@ import 'package:flame/events.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flame_lottie/flame_lottie.dart';
 import 'package:flame/game.dart';
+import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
 import '../../../Util/Asset/SPAsset.dart';
 import '../../../Util/EventBus/SPEventBus.dart';
+import 'SPGameKylinGaming.dart';
 
-class SPGameKylinHome extends FlameGame with TapDetector {
+class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComponents {
   late LottieComponent _loadingAnimation;
   late SpriteComponent _startButton;
   late SpriteComponent _musicButton;
@@ -118,10 +120,12 @@ class SPGameKylinHome extends FlameGame with TapDetector {
   }
 
   void _startGame() {
-    // FlameAudio.bgm.stop();
+    FlameAudio.bgm.stop();
     // 移除所有组件
-    // removeAll(children);
-    // add(SPMap());
+    removeAll(children);
+    SPLogger.d('start SPGameKylinGaming');
+    final game = SPGameKylinGaming();
+    add(game);
   }
 
   void _closeGame() {
