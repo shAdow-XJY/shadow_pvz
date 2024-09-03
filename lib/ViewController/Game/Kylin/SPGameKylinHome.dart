@@ -15,7 +15,8 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
   late SpriteComponent _musicButton;
   late SpriteComponent _closeButton;
 
-  bool _isMusicOn = true;
+  bool _isMusicOn = false;
+  bool _isMusicPaused = false;
 
   //
   bool _isLoadDone = false;
@@ -46,7 +47,6 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
 
     // 背景音乐
     FlameAudio.bgm.initialize();
-    await FlameAudio.bgm.play(SPAssetAudio.bgmOfKylinOfGame);
 
     // 预加载资源
     images.loadAll([
@@ -55,6 +55,7 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
     });
 
     FlameAudio.audioCache.loadAll([
+      SPAssetAudio.bgmOfKylinOfGame
     ]).whenComplete(() {
       _isLoadingAudio = false;
     });
@@ -106,14 +107,14 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
 
   @override
   void onTapDown(TapDownInfo info) {
-    if (_closeButton.containsPoint(info.eventPosition.global)) {
+    if (children.contains(_closeButton) && _closeButton.containsPoint(info.eventPosition.global)) {
       _closeGame();
     }
     else if (_isLoadDone) {
-      if (_startButton.containsPoint(info.eventPosition.global)) {
+      if (children.contains(_startButton) && _startButton.containsPoint(info.eventPosition.global)) {
         // 开始游戏
         _startGame();
-      } else if (_musicButton.containsPoint(info.eventPosition.global)) {
+      } else if (children.contains(_musicButton) && _musicButton.containsPoint(info.eventPosition.global)) {
         _toggleMusic(); // Call async function to toggle music
       }
     }
@@ -137,11 +138,16 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
     // Separate async function
     _isMusicOn = !_isMusicOn;
     if (_isMusicOn) {
-      FlameAudio.bgm.resume();
+      if (!_isMusicPaused) {
+        await FlameAudio.bgm.play(SPAssetAudio.bgmOfKylinOfGame);
+      } else {
+        FlameAudio.bgm.resume();
+      }
       _musicButton.sprite =
       await loadSprite(SPAssetImages.musicOnButtonOfCommon);
     } else {
       FlameAudio.bgm.pause();
+      _isMusicPaused = true;
       _musicButton.sprite =
       await loadSprite(SPAssetImages.musicOffButtonOfCommon);
     }

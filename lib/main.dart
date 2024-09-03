@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // FIXME: test
-      initialRoute: GlobalRoutes.kylinHomePage.name,
+      // initialRoute: GlobalRoutes.kylinHomePage.name,
 
-      // initialRoute: GlobalRoutes.splashPage.name,
+      initialRoute: GlobalRoutes.splashPage.name,
       onGenerateRoute: globalGenerateRoute,
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,

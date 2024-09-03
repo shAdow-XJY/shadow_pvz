@@ -13,7 +13,8 @@ class SPMapSplash extends FlameGame with TapDetector {
   late LottieComponent _loadingAnimation;
   late SpriteComponent _startButton;
   late SpriteComponent _musicButton;
-  bool _isMusicOn = true;
+  bool _isMusicOn = false;
+  bool _isMusicPaused = false;
 
   //
   bool _isLoadDone = false;
@@ -44,7 +45,6 @@ class SPMapSplash extends FlameGame with TapDetector {
 
     // 背景音乐
     FlameAudio.bgm.initialize();
-    await FlameAudio.bgm.play(SPAssetAudio.bgmOfSplash);
 
     // 预加载资源
     images.loadAll([
@@ -104,10 +104,10 @@ class SPMapSplash extends FlameGame with TapDetector {
   @override
   void onTapDown(TapDownInfo info) {
     if (_isLoadDone) {
-      if (_startButton.containsPoint(info.eventPosition.global)) {
+      if (children.contains(_startButton) && _startButton.containsPoint(info.eventPosition.global)) {
         // 开始游戏
         _startGame();
-      } else if (_musicButton.containsPoint(info.eventPosition.global)) {
+      } else if (children.contains(_musicButton) && _musicButton.containsPoint(info.eventPosition.global)) {
         _toggleMusic(); // Call async function to toggle music
       }
     }
@@ -125,11 +125,16 @@ class SPMapSplash extends FlameGame with TapDetector {
     // Separate async function
     _isMusicOn = !_isMusicOn;
     if (_isMusicOn) {
-      FlameAudio.bgm.resume();
+      if (!_isMusicPaused) {
+        await FlameAudio.bgm.play(SPAssetAudio.bgmOfSplash);
+      } else {
+        FlameAudio.bgm.resume();
+      }
       _musicButton.sprite =
           await loadSprite(SPAssetImages.musicOnButtonOfCommon);
     } else {
       FlameAudio.bgm.pause();
+      _isMusicPaused = true;
       _musicButton.sprite =
           await loadSprite(SPAssetImages.musicOffButtonOfCommon);
     }
