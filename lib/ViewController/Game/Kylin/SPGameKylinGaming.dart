@@ -1,15 +1,14 @@
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/input.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/services.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
 import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
-import 'SPGameKylinRole.dart';
+import '../../../View/Game/Kylin/SPGameKylinRole.dart';
 
-// ... other imports
 
 class SPGameKylinGaming extends Component with HasGameRef<FlameGame>, KeyboardHandler {
   late SPGameKylinRole _kylin;
@@ -32,13 +31,33 @@ class SPGameKylinGaming extends Component with HasGameRef<FlameGame>, KeyboardHa
     _floor = RectangleComponent(
       size: Vector2(gameRef.size.x, 50),
       position: Vector2(0, gameRef.size.y - 50),
-      paint: Paint()..color = Color(0xFF0000FF), // Example color
+      paint: Paint()..color = SPAssetColor.kylinFloorColor, // Example color
     );
     add(_floor);
+    _floor.add(RectangleHitbox());
 
+    // // Create the kylin
+    // _kylin = SPGameKylinRole(Vector2(100, gameRef.size.y - 50));
+    // _kylin.roleCollisionStart = (intersectionPoints, other) { // Set the callback
+    //   if (other is RectangleComponent) {
+    //     _isJumping = false;
+    //     _isFalling = false;
+    //     _currentHeight = 0;
+    //     _kylin.updateState(KylinState.running);
+    //   }
+    // };
+    // // _kylin.priority = 1;
+    // add(_kylin);
     // Create the kylin
-    _kylin = SPGameKylinRole(Vector2(100, gameRef.size.y - 100));
-    // _kylin.priority = 1;
+    _kylin = SPGameKylinRole(Vector2(100, gameRef.size.y - 200));
+    _kylin.roleCollisionStart = (intersectionPoints, other) { // Set the callback
+      if (other is RectangleComponent) {
+        _isJumping = false;
+        _isFalling = false;
+        _currentHeight = 0;
+        _kylin.updateState(KylinState.running); // Access inner role
+      }
+    };
     add(_kylin);
   }
 
@@ -82,6 +101,6 @@ class SPGameKylinGaming extends Component with HasGameRef<FlameGame>, KeyboardHa
       }
     }
 
-    _kylin.updatePosition(Vector2(100, gameRef.size.y - 100 - _currentHeight));
+    _kylin.updatePosition(Vector2(100, gameRef.size.y - 50 - _currentHeight));
   }
 }

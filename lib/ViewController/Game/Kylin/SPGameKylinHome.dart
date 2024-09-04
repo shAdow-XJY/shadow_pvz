@@ -9,7 +9,7 @@ import '../../../Util/Asset/SPAsset.dart';
 import '../../../Util/EventBus/SPEventBus.dart';
 import 'SPGameKylinGaming.dart';
 
-class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComponents {
+class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComponents, HasCollisionDetection {
   late LottieComponent _loadingAnimation;
   late SpriteComponent _startButton;
   late SpriteComponent _musicButton;
@@ -23,6 +23,10 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
   bool _isLoadingTime = true;
   bool _isLoadingImages = true;
   bool _isLoadingAudio = true;
+
+  SPGameKylinHome(bool isDebug) {
+    debugMode = isDebug;
+  }
 
   @override
   Future<void> onLoad() async {

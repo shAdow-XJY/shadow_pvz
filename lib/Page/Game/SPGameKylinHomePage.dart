@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
 import '../../Util/EventBus/SPEventBus.dart';
+import '../../Util/GlobalVar/GlobalVar.dart';
 import '../../ViewController/Game/GameEntry.dart';
 
 class SPGameKylinHomePage extends StatefulWidget {
@@ -40,7 +41,7 @@ class _SPGameKylinHomePageState extends State<SPGameKylinHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Focus(child: GameWidget(game: SPGameKylinHome()),),
+      body: Focus(child: GameWidget(game: SPGameKylinHome(GlobalVar.isDebugMode)),),
     );
   }
 }

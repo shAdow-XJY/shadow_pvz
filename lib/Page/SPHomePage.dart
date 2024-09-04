@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../Router/Router.dart';
 import '../Util/EventBus/SPEventBus.dart';
+import '../Util/GlobalVar/GlobalVar.dart';
 import '../ViewController/Splash/SPMapSplash.dart';
 import '../ViewModel/Map/import/SPMapViewModel.dart';
 
@@ -55,7 +56,7 @@ class _SPHomePageState extends State<SPHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GameWidget(game: SPMapSplash()),
+      body: GameWidget(game: SPMapSplash(GlobalVar.isDebugMode)),
     );
   }
 }

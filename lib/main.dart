@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:shadow_pvz/Util/GlobalVar/GlobalVar.dart';
 
 import 'Localization/import/SPLocalization.dart';
 import 'Router/Router.dart';
@@ -20,12 +21,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       // FIXME: test
-      // initialRoute: GlobalRoutes.kylinHomePage.name,
+      initialRoute: GlobalRoutes.kylinHomePage.name,
 
-      initialRoute: GlobalRoutes.splashPage.name,
+      // initialRoute: GlobalRoutes.splashPage.name,
       onGenerateRoute: globalGenerateRoute,
       theme: ThemeData.dark(),
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: GlobalVar.isDebugMode,
     );
   }
 }

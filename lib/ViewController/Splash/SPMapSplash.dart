@@ -22,6 +22,10 @@ class SPMapSplash extends FlameGame with TapDetector {
   bool _isLoadingImages = true;
   bool _isLoadingAudio = true;
 
+  SPMapSplash(bool isDebug) {
+    debugMode = isDebug;
+  }
+
   @override
   Future<void> onLoad() async {
     // 背景图片

@@ -1,13 +1,20 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_lottie/flame_lottie.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
 
 enum KylinState { running, jumping, falling }
 
-class SPGameKylinRole extends Component with HasGameRef {
+typedef RoleCollisionStartCallback = void Function(
+    Set<Vector2> intersectionPoints, PositionComponent other);
+
+class SPGameKylinRole extends PositionComponent
+    with HasGameRef, CollisionCallbacks {
   late LottieComponent _runAnimationComponent;
   late LottieComponent _jumpAnimationComponent;
   late LottieComponent _fallAnimationComponent;
+
+  RoleCollisionStartCallback? roleCollisionStart;
 
   KylinState _currentState = KylinState.running;
   Vector2 _position;
@@ -20,29 +27,31 @@ class SPGameKylinRole extends Component with HasGameRef {
   @override
   Future<void>? onLoad() async {
     // Load Lottie compositions
-    final runComposition = await loadLottie(Lottie.asset(SPAssetLottie.runningOfKylin));
-    final jumpComposition = await loadLottie(Lottie.asset(SPAssetLottie.jumpingOfKylin));
-    final fallComposition = await loadLottie(Lottie.asset(SPAssetLottie.jumpingOfKylin));
+    final runComposition =
+        await loadLottie(Lottie.asset(SPAssetLottie.jumpingOfKylin));
+    final jumpComposition =
+        await loadLottie(Lottie.asset(SPAssetLottie.jumpingOfKylin));
+    final fallComposition =
+        await loadLottie(Lottie.asset(SPAssetLottie.jumpingOfKylin));
 
     // Create animation components
     _runAnimationComponent = LottieComponent(
       runComposition,
-      size: Vector2(100, 100),
+      size: Vector2(80, 40),
       position: _position,
-      repeating: true
+      anchor: Anchor.bottomLeft,
+      repeating: true,
     );
-    _jumpAnimationComponent = LottieComponent(
-      jumpComposition,
-      size: Vector2(100, 100),
-      position: _position,
-        repeating: true
-    );
-    _fallAnimationComponent = LottieComponent(
-      fallComposition,
-      size: Vector2(100, 100),
-      position: _position,
-        repeating: true
-    );
+    _jumpAnimationComponent = LottieComponent(jumpComposition,
+        position: _position,
+        size: Vector2(80, 40),
+        anchor: Anchor.bottomLeft,
+        repeating: true);
+    _fallAnimationComponent = LottieComponent(fallComposition,
+        position: _position,
+        size: Vector2(80, 40),
+        anchor: Anchor.bottomLeft,
+        repeating: true);
 
     // Initially add the run animation component
     add(_runAnimationComponent);
@@ -79,6 +88,15 @@ class SPGameKylinRole extends Component with HasGameRef {
       case KylinState.falling:
         add(_fallAnimationComponent);
         break;
+    }
+  }
+
+  @override
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
+    if (roleCollisionStart != null) {
+      roleCollisionStart!(intersectionPoints, other);
     }
   }
 }
