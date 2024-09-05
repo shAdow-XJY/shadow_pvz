@@ -10,9 +10,9 @@ import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 import '../../../View/Game/Kylin/SPGameKylinRole.dart';
 
 
-class SPGameKylinGaming extends Component with HasGameRef<FlameGame>, KeyboardHandler {
+class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandler, CollisionCallbacks {
   late SPGameKylinRole _kylin;
-  late RectangleComponent _floor;
+  late PositionComponent _floor;
 
   final double _maxHeight = 200;
   final double _jumpSpeed = 0.6;
@@ -28,29 +28,21 @@ class SPGameKylinGaming extends Component with HasGameRef<FlameGame>, KeyboardHa
     add(SpriteComponent(sprite: background, size: gameRef.size));
 
     // Create the floor
-    _floor = RectangleComponent(
+    _floor = PositionComponent(
       size: Vector2(gameRef.size.x, 50),
       position: Vector2(0, gameRef.size.y - 50),
-      paint: Paint()..color = SPAssetColor.kylinFloorColor, // Example color
+      // paint: Paint()..color = SPAssetColor.kylinFloorColor, // Example color
     );
     add(_floor);
-    _floor.add(RectangleHitbox());
+    _floor.add(RectangleHitbox(
+      // size: Vector2(gameRef.size.x, 50),
+      // position: Vector2(0, gameRef.size.y - 50),
+    ));
 
-    // // Create the kylin
-    // _kylin = SPGameKylinRole(Vector2(100, gameRef.size.y - 50));
-    // _kylin.roleCollisionStart = (intersectionPoints, other) { // Set the callback
-    //   if (other is RectangleComponent) {
-    //     _isJumping = false;
-    //     _isFalling = false;
-    //     _currentHeight = 0;
-    //     _kylin.updateState(KylinState.running);
-    //   }
-    // };
-    // // _kylin.priority = 1;
-    // add(_kylin);
     // Create the kylin
     _kylin = SPGameKylinRole(Vector2(100, gameRef.size.y - 200));
-    _kylin.roleCollisionStart = (intersectionPoints, other) { // Set the callback
+    _kylin.roleCollisionStart = (intersectionPoints, other) {
+      SPLogger.d("Kylin hit Box");
       if (other is RectangleComponent) {
         _isJumping = false;
         _isFalling = false;
@@ -59,25 +51,41 @@ class SPGameKylinGaming extends Component with HasGameRef<FlameGame>, KeyboardHa
       }
     };
     add(_kylin);
+
+    add(RectangleHitbox());
   }
 
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    SPLogger.d('Kylin Key Event');
+    // SPLogger.d('Kylin Key Event');
     if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.keyZ && !_isFalling) { // Allow jump if falling
-      SPLogger.d('Kylin _isJumping');
+      // SPLogger.d('Kylin _isJumping');
       _isJumping = true;
       _isFalling = false; // Reset isFalling when jumping
       _kylin.updateState(KylinState.jumping);
       return true;
     } else if (event is KeyUpEvent && event.logicalKey == LogicalKeyboardKey.keyZ && _isJumping) {
-      SPLogger.d('Kylin _isFalling');
+      // SPLogger.d('Kylin _isFalling');
       _isJumping = false;
       _isFalling = true; // Set isFalling when no longer jumping
       return true;
     }
     return super.onKeyEvent(event, keysPressed);
   }
+
+  @override
+  void onCollisionStart(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    super.onCollisionStart(intersectionPoints, other);
+    SPLogger.d('SPGameKylinGaming onCollisionStart');
+  }
+@override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    // TODO: implement onCollision
+    super.onCollision(intersectionPoints, other);
+    SPLogger.d('SPGameKylinGaming onCollision');
+
+}
 
   @override
   void update(double dt) {
@@ -88,17 +96,19 @@ class SPGameKylinGaming extends Component with HasGameRef<FlameGame>, KeyboardHa
 
       if (_currentHeight >= _maxHeight) {
         _isJumping = false;
+        _isFalling = true;
       }
-    } else if (_currentHeight > 0) {
+    }
+    else if (_isFalling) {
       _kylin.updateState(KylinState.falling);
       _isFalling = true; // Set isFalling when falling
       _currentHeight -= _fallSpeed; // Adjust fall speed
 
-      if (_currentHeight <= 0) {
-        _currentHeight = 0;
-        _isFalling = false; // Reset isFalling when landed
-        _kylin.updateState(KylinState.running);
-      }
+      // if (_currentHeight <= 0) {
+      //   _currentHeight = 0;
+      //   _isFalling = false; // Reset isFalling when landed
+      //   _kylin.updateState(KylinState.running);
+      // }
     }
 
     _kylin.updatePosition(Vector2(100, gameRef.size.y - 50 - _currentHeight));

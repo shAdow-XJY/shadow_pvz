@@ -2,6 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_lottie/flame_lottie.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
+import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
 enum KylinState { running, jumping, falling }
 
@@ -13,6 +14,7 @@ class SPGameKylinRole extends PositionComponent
   late LottieComponent _runAnimationComponent;
   late LottieComponent _jumpAnimationComponent;
   late LottieComponent _fallAnimationComponent;
+  late RectangleHitbox _rectangleHitbox;
 
   RoleCollisionStartCallback? roleCollisionStart;
 
@@ -53,6 +55,13 @@ class SPGameKylinRole extends PositionComponent
         anchor: Anchor.bottomLeft,
         repeating: true);
 
+    _rectangleHitbox = RectangleHitbox(
+      position: _position,
+      size: Vector2(80, 40),
+      anchor: Anchor.bottomLeft,
+    );
+    add(_rectangleHitbox);
+
     // Initially add the run animation component
     add(_runAnimationComponent);
     _isInitialized = true;
@@ -71,12 +80,14 @@ class SPGameKylinRole extends PositionComponent
       _runAnimationComponent.position = _position;
       _jumpAnimationComponent.position = _position;
       _fallAnimationComponent.position = _position;
+      _rectangleHitbox.position = _position;
     }
   }
 
   void _changeAnimation() {
     // Remove the current animation component
     removeAll(children);
+    add(_rectangleHitbox);
     // Add the new animation component based on the current state
     switch (_currentState) {
       case KylinState.running:
@@ -95,8 +106,17 @@ class SPGameKylinRole extends PositionComponent
   void onCollisionStart(
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
+    SPLogger.d('Kylin Role onCollisionStart');
     if (roleCollisionStart != null) {
       roleCollisionStart!(intersectionPoints, other);
     }
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    // TODO: implement onCollision
+    super.onCollision(intersectionPoints, other);
+    SPLogger.d('Kylin onCollision');
+
   }
 }

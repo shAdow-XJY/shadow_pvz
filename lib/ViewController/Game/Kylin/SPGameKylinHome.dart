@@ -94,6 +94,9 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
     Future.delayed(const Duration(seconds: 1, milliseconds: 500)).then((_) {
       _isLoadingTime = false;
     });
+
+    add(ScreenHitbox()); // 添加 ScreenHitbox 组件
+
   }
 
   @override
