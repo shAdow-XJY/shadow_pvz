@@ -6,8 +6,7 @@ import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
 enum KylinState { running, jumping, falling }
 
-typedef RoleCollisionStartCallback = void Function(
-    Set<Vector2> intersectionPoints, PositionComponent other);
+typedef RoleCollisionStartCallback = void Function(Set<Vector2> intersectionPoints, PositionComponent other);
 
 class SPGameKylinRole extends PositionComponent
     with HasGameRef, CollisionCallbacks {
@@ -116,7 +115,7 @@ class SPGameKylinRole extends PositionComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     // TODO: implement onCollision
     super.onCollision(intersectionPoints, other);
-    SPLogger.d('Kylin onCollision');
+    // SPLogger.d('Kylin onCollision');
 
   }
 }

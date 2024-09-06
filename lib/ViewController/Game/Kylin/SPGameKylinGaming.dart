@@ -7,12 +7,13 @@ import 'package:flutter/services.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
 import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
+import '../../../View/Common/import/SPCommonView.dart';
 import '../../../View/Game/Kylin/SPGameKylinRole.dart';
 
 
 class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandler, CollisionCallbacks {
   late SPGameKylinRole _kylin;
-  late PositionComponent _floor;
+  late SPPositionComponent _floor;
 
   final double _maxHeight = 200;
   final double _jumpSpeed = 0.6;
@@ -28,22 +29,20 @@ class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandl
     add(SpriteComponent(sprite: background, size: gameRef.size));
 
     // Create the floor
-    _floor = PositionComponent(
+    _floor = SPPositionComponent(
       size: Vector2(gameRef.size.x, 50),
       position: Vector2(0, gameRef.size.y - 50),
-      // paint: Paint()..color = SPAssetColor.kylinFloorColor, // Example color
+      componentType: ComponentType.floor
+      // paint: Paint()..color = SPAssetColor.kylinFloorColor,
     );
     add(_floor);
-    _floor.add(RectangleHitbox(
-      // size: Vector2(gameRef.size.x, 50),
-      // position: Vector2(0, gameRef.size.y - 50),
-    ));
 
     // Create the kylin
     _kylin = SPGameKylinRole(Vector2(100, gameRef.size.y - 200));
     _kylin.roleCollisionStart = (intersectionPoints, other) {
-      SPLogger.d("Kylin hit Box");
-      if (other is RectangleComponent) {
+      if ((other is SPPositionComponent && other.componentType == ComponentType.floor)
+      || other is ScreenHitbox) {
+        SPLogger.d("Role Hit SPPositionComponent");
         _isJumping = false;
         _isFalling = false;
         _currentHeight = 0;
@@ -51,8 +50,6 @@ class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandl
       }
     };
     add(_kylin);
-
-    add(RectangleHitbox());
   }
 
   @override
@@ -72,20 +69,6 @@ class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandl
     }
     return super.onKeyEvent(event, keysPressed);
   }
-
-  @override
-  void onCollisionStart(
-      Set<Vector2> intersectionPoints, PositionComponent other) {
-    super.onCollisionStart(intersectionPoints, other);
-    SPLogger.d('SPGameKylinGaming onCollisionStart');
-  }
-@override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    // TODO: implement onCollision
-    super.onCollision(intersectionPoints, other);
-    SPLogger.d('SPGameKylinGaming onCollision');
-
-}
 
   @override
   void update(double dt) {

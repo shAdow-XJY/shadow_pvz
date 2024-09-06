@@ -17,10 +17,10 @@ class SPSplashPageState extends State<SPSplashPage> {
     return Scaffold(
       body: FlameSplashScreen(
         showBefore: (BuildContext context) {
-          return const Text('Before logo');
+          return const Text('Welcome!');
         },
         showAfter: (BuildContext context) {
-          return const Text('After logo');
+          return const Text('Start soon!');
         },
         theme: FlameSplashTheme.dark,
         onFinish: (context) => Navigator.pushReplacementNamed(context, GlobalRoutes.homePage.name),
