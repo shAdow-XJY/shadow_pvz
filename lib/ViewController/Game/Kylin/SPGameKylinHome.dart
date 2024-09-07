@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame_audio/flame_audio.dart';
@@ -7,9 +9,11 @@ import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
 import '../../../Util/Asset/SPAsset.dart';
 import '../../../Util/EventBus/SPEventBus.dart';
+import '../../../View/Common/import/SPCommonView.dart';
 import 'SPGameKylinGaming.dart';
 
 class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComponents, HasCollisionDetection {
+  late SpriteComponent _background;
   late LottieComponent _loadingAnimation;
   late SpriteComponent _startButton;
   late SpriteComponent _musicButton;
@@ -24,19 +28,22 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
   bool _isLoadingImages = true;
   bool _isLoadingAudio = true;
 
+  final _subscriptions = <StreamSubscription>[];
+
   SPGameKylinHome(bool isDebug) {
     debugMode = isDebug;
   }
-
+  
   @override
   Future<void> onLoad() async {
     // 背景图片
-    add(SpriteComponent(
+    _background = SpriteComponent(
       sprite: await loadSprite(SPAssetImages.backgroundOfKylinOfGame),
       size: size,
       position: size / 2,
       anchor: Anchor.center,
-    ));
+    );
+    add(_background);
 
     // 加载动画
     final loadingAsset =
@@ -95,10 +102,24 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
       _isLoadingTime = false;
     });
 
-    add(ScreenHitbox()); // 添加 ScreenHitbox 组件
-
+    _subscriptions.add(eventBus.on<SPEvent>().listen((event) {
+          if (event.eventCode == SPEventCode.kylinGameOver) {
+            _kylinGameOver(event);
+          }
+        })
+    );
   }
 
+
+  @override
+  void onDispose() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    _subscriptions.clear();
+    super.onDispose();
+  }
+  
   @override
   void update(double dt) {
     super.update(dt);
@@ -126,7 +147,7 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
       }
     }
   }
-
+  
   void _startGame() {
     FlameAudio.bgm.stop();
     // 移除所有组件
@@ -159,4 +180,25 @@ class SPGameKylinHome extends FlameGame with TapDetector, HasKeyboardHandlerComp
       await loadSprite(SPAssetImages.musicOffButtonOfCommon);
     }
   }
+
+  void _kylinGameOver(SPEvent event) {
+    // 移除所有组件
+    removeAll(children);
+    SPLogger.d('Kylin Game over');
+    final gameOver = SPCommonGameOverView(
+      onRestart: _startGame,
+      onExit: _backCurrentPage
+    );
+
+    add(gameOver);
+  }
+
+  void _backCurrentPage() {
+    removeAll(children);
+    add(_background);
+    add(_closeButton);
+    add(_startButton);
+    add(_musicButton);
+  }
+
 }

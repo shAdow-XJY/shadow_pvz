@@ -4,10 +4,8 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '../../Util/Asset/SPAssetColor.dart';
+import 'SPCommonCollisionType.dart';
 
-enum ComponentType {
-  floor
-}
 
 typedef OnCollisionStartCallback = void Function(Set<Vector2> intersectionPoints, PositionComponent other);
 

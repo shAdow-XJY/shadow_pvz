@@ -1,1 +1,6 @@
-enum CollisionDirection {up, down, left, right}
+enum CollisionDirection {up, down, left, right, unknown}
+
+enum ComponentType {
+  floor,
+  obstacle
+}
