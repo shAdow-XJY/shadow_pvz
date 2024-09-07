@@ -1,17 +1,15 @@
-import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 import 'package:flutter/services.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
-import 'package:shadow_pvz/Util/Log/SPLogger.dart';
 
 import '../../../View/Common/import/SPCommonView.dart';
 import '../../../View/Game/Kylin/SPGameKylinRole.dart';
 
 
 class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandler, CollisionCallbacks {
+  late SPCommonBackgroundLottieView _backgroundLottieView;
   late SPGameKylinRole _kylin;
   late SPPositionComponent _floor;
 
@@ -24,25 +22,32 @@ class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandl
 
   @override
   Future<void>? onLoad() async {
-    // Load the background image
-    final background = await Sprite.load(SPAssetImages.backgroundOfMap); // Replace with your background image
-    add(SpriteComponent(sprite: background, size: gameRef.size));
+    // Load the background
+    _backgroundLottieView = SPCommonBackgroundLottieView(lottiePath: SPAssetLottie.movingBackgroundOfKylin);
+    add(_backgroundLottieView);
 
     // Create the floor
     _floor = SPPositionComponent(
       size: Vector2(gameRef.size.x, 50),
       position: Vector2(0, gameRef.size.y - 50),
       componentType: ComponentType.floor
-      // paint: Paint()..color = SPAssetColor.kylinFloorColor,
     );
     add(_floor);
 
     // Create the kylin
     _kylin = SPGameKylinRole(Vector2(100, gameRef.size.y - 200));
-    _kylin.roleCollisionStart = (intersectionPoints, other) {
-      if ((other is SPPositionComponent && other.componentType == ComponentType.floor)
-      || other is ScreenHitbox) {
-        SPLogger.d("Role Hit SPPositionComponent");
+    _kylin.roleCollisionStart = (intersectionPoints, other, direction) {
+      if (other is SPPositionComponent && other.componentType == ComponentType.floor) {
+        // SPLogger.d("Role Hit SPPositionComponent");
+        if (direction == CollisionDirection.down)
+          {
+            _isJumping = false;
+            _isFalling = false;
+            _currentHeight = 0;
+            _kylin.updateState(KylinState.running);
+          }
+      }
+      else if (other is ScreenHitbox) {
         _isJumping = false;
         _isFalling = false;
         _currentHeight = 0;
@@ -86,12 +91,6 @@ class SPGameKylinGaming extends PositionComponent with HasGameRef, KeyboardHandl
       _kylin.updateState(KylinState.falling);
       _isFalling = true; // Set isFalling when falling
       _currentHeight -= _fallSpeed; // Adjust fall speed
-
-      // if (_currentHeight <= 0) {
-      //   _currentHeight = 0;
-      //   _isFalling = false; // Reset isFalling when landed
-      //   _kylin.updateState(KylinState.running);
-      // }
     }
 
     _kylin.updatePosition(Vector2(100, gameRef.size.y - 50 - _currentHeight));

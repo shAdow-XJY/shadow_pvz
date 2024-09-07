@@ -1,5 +1,9 @@
+import 'dart:ui';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+
+import '../../Util/Asset/SPAssetColor.dart';
 
 enum ComponentType {
   floor
@@ -10,6 +14,7 @@ typedef OnCollisionStartCallback = void Function(Set<Vector2> intersectionPoints
 class SPPositionComponent extends PositionComponent with CollisionCallbacks {
   final ComponentType? componentType;
   final String? componentId;
+  final Paint _paint;
 
   OnCollisionStartCallback? collisionStartCallback;
 
@@ -22,11 +27,19 @@ class SPPositionComponent extends PositionComponent with CollisionCallbacks {
     super.angle,
     super.anchor,
     super.priority,
-  });
+    double? radius,
+    Paint? paint,
+  }): _paint = paint ?? Paint()..color = SPAssetColor.getRandomColor();
 
   @override
   Future<void>? onLoad() async {
     add(RectangleHitbox());
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), _paint);
   }
 
   @override

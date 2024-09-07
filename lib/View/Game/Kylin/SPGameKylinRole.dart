@@ -2,11 +2,13 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_lottie/flame_lottie.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
-import 'package:shadow_pvz/Util/Log/SPLogger.dart';
+
+import '../../Common/SPCommonCollisionType.dart';
 
 enum KylinState { running, jumping, falling }
 
-typedef RoleCollisionStartCallback = void Function(Set<Vector2> intersectionPoints, PositionComponent other);
+
+typedef RoleCollisionStartCallback = void Function(Set<Vector2> intersectionPoints, PositionComponent other, CollisionDirection direction);
 
 class SPGameKylinRole extends PositionComponent
     with HasGameRef, CollisionCallbacks {
@@ -105,11 +107,32 @@ class SPGameKylinRole extends PositionComponent
   void onCollisionStart(
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
-    SPLogger.d('Kylin Role onCollisionStart');
     if (roleCollisionStart != null) {
-      roleCollisionStart!(intersectionPoints, other);
+      // Calculate collision direction
+      CollisionDirection direction = _getCollisionDirection(intersectionPoints, other);
+      roleCollisionStart!(intersectionPoints, other, direction);
     }
   }
+
+  CollisionDirection _getCollisionDirection(
+      Set<Vector2> intersectionPoints, PositionComponent other) {
+    // Get the center point of this component
+    final center = position + size / 2;
+
+    // Get the center point of the other component
+    final otherCenter = other.position + other.size / 2;
+
+    // Calculate the difference between the centers
+    final diff = otherCenter - center;
+
+    // Determine the collision direction based on the difference
+    if (diff.y.abs() > diff.x.abs()) {
+      return diff.y > 0 ? CollisionDirection.down : CollisionDirection.up;
+    } else {
+      return diff.x > 0 ? CollisionDirection.right : CollisionDirection.left;
+    }
+  }
+
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
