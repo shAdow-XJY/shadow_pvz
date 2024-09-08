@@ -62693,10 +62693,12 @@ p.x1=!0
 $.mU().ta(new A.fX(B.fQ,null))}}},
 $S:387}
 A.a_Z.prototype={
-$1(a){var s=this.a
-if(!s.x1)if(a instanceof A.iQ&&a.k4===B.d3){$.mT().a.i8("kylin fall from obstacle")
-s.ry=!1
-s.to=!0}},
+$1(a){var s,r=this.a
+if(!r.x1)if(a instanceof A.iQ&&a.k4===B.d3){s=r.ok
+s===$&&A.b()
+if(s.at.d.a[0]>=a.at.d.a[0]+a.ax.a[0]){$.mT().a.i8("kylin fall from obstacle")
+r.ry=!1
+r.to=!0}}},
 $S:113}
 A.a0_.prototype={
 $1(a){var s,r

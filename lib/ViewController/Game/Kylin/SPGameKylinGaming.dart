@@ -87,9 +87,11 @@ class SPGameKylinGaming extends PositionComponent
       if (!_isGameOver) {
         if (other is SPPositionComponent &&
             other.componentType == ComponentType.obstacle) {
-          SPLogger.d('kylin fall from obstacle');
-          _isJumping = false;
-          _isFalling = true;
+          if (_kylin.position.x >= other.position.x + other.size.x) {
+            SPLogger.d('kylin fall from obstacle');
+            _isJumping = false;
+            _isFalling = true;
+          }
         }
       }
     };
