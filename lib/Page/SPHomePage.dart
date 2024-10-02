@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '../Router/Router.dart';
 import '../Util/EventBus/SPEventBus.dart';
 import '../Util/GlobalVar/GlobalVar.dart';
-import '../ViewController/Splash/SPMapSplash.dart';
+import '../ViewController/Map/SPMap.dart';
 import '../ViewModel/Map/import/SPMapViewModel.dart';
 
 class SPHomePage extends StatefulWidget {
@@ -56,7 +56,8 @@ class _SPHomePageState extends State<SPHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GameWidget(game: SPMapSplash(GlobalVar.isDebugMode)),
+      backgroundColor: Colors.transparent,
+      body: Focus(child: GameWidget(game: SPMap(GlobalVar.isDebugMode))),
     );
   }
 }

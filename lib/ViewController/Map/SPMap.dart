@@ -1,49 +1,83 @@
+import 'dart:math';
+
+import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
-import 'package:flame/flame.dart';
-import 'package:flutter/material.dart';
+import 'package:flame/events.dart';
+import 'package:flame/game.dart';
+import 'package:flame/input.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
 import 'package:shadow_pvz/Util/EventBus/SPEventBus.dart';
+import 'package:shadow_pvz/Util/Log/SPLogger.dart';
+import 'package:shadow_pvz/ViewController/Splash/SPMapSplash.dart';
 import 'package:shadow_pvz/ViewModel/Map/import/SPMapViewModel.dart';
 
 import '../../View/Map/import/SPMapView.dart';
 
-class SPMap extends Component with HasGameRef {
-  late Sprite _mapSprite;
-  final SPVMMap _mapViewModel = SPVMMap(); // Create SPVMMap instance
+class SPMap extends FlameGame with PanDetector, TapDetector {
+  final SPVMMap _mapViewModel = SPVMMap();
+  
+  late final World _mapWorld;
+  late final CameraComponent _cameraComponent;
+
+  late final PositionComponent _mapComponent;
+  List<Component> buildingList = [];
+  late final CameraComponent _magnifyingGlass;
+  static const zoom = 3.0;
+  static const radius = 130.0;
+
+  SPMap(bool isDebug) {
+    debugMode = isDebug;
+  }
 
   @override
   Future<void>? onLoad() async {
-    _mapSprite = Sprite(await Flame.images.load(SPAssetImages.backgroundOfMap));
+    // 背景图片
+    add(SpriteComponent(
+      sprite: await loadSprite(SPAssetImages.backgroundOfMap),
+      size: size,
+      position: size / 2,
+      anchor: Anchor.center,
+    ));
 
     // Create buildings from _mapViewModel
     for (final building in _mapViewModel.buildings) {
-      add(SPBuildingView(
-        position: Vector2(building.positionX * gameRef.size.x, building.positionY * gameRef.size.y),
+      buildingList.add(SPBuildingView(
+        position: Vector2(building.positionX, building.positionY),
         onTap: _handleBuildingTap,
         type: building.type,
       ));
     }
+
+    _mapWorld = World();
+    await add(_mapWorld);
+
+    // 创建地图组件
+    _mapComponent = PositionComponent(
+      size: Vector2(SPVMMap.mapWidth, SPVMMap.mapHeight),
+      anchor: Anchor.center,
+      children: buildingList,
+    );
+
+
+    _cameraComponent = CameraComponent(world: _mapWorld); // 然后将 _mapWorld 添加到 camera
+    await add(_cameraComponent);
+
+    add(SPMapSplash(startGame: () {
+      _mapWorld.add(_mapComponent); // 先将 _mapComponent 添加到 _mapWorld
+    })); // 将 SPMapSplash 添加到 _mapWorld
   }
 
   @override
-  void onGameResize(Vector2 size) {
-    super.onGameResize(size);
-
-    // Update building positions on resize
-    int i = 0;
-    for (final building in children.whereType<SPBuildingView>()) {
-      building.position = Vector2(
-        _mapViewModel.buildings[i].positionX * size.x,
-        _mapViewModel.buildings[i].positionY * size.y,
-      );
-      i++;
-    }
+  void onTapDown(TapDownInfo info) {
+    SPLogger.d("SPMap onTapDown");
   }
 
   @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    _mapSprite.render(canvas, size: gameRef.size); // 使用游戏尺寸绘制背景
+  bool onPanUpdate(DragUpdateInfo info) {
+    SPLogger.d("SPMap onPanUpdate ${-info.delta.global}");
+
+    _cameraComponent.moveBy(-info.delta.global);
+    return true;
   }
 
   // Callback function to handle building taps

@@ -41,6 +41,7 @@ class _SPGameKylinHomePageState extends State<SPGameKylinHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Focus(child: GameWidget(game: SPGameKylinHome(GlobalVar.isDebugMode)),),
     );
   }

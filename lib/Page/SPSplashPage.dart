@@ -15,6 +15,7 @@ class SPSplashPageState extends State<SPSplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: FlameSplashScreen(
         showBefore: (BuildContext context) {
           return const Text('Welcome!');
