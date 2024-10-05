@@ -1,8 +1,7 @@
-import 'dart:math';
 
-import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:shadow_pvz/Util/Asset/SPAsset.dart';
@@ -62,6 +61,14 @@ class SPMap extends FlameGame with PanDetector, TapDetector {
     _cameraComponent = CameraComponent(world: _mapWorld); // 然后将 _mapWorld 添加到 camera
     await add(_cameraComponent);
 
+    // 设置相机边界
+    _cameraComponent.setBounds(Rectangle.fromLTRB(
+      -_mapComponent.size.x/4,
+      -_mapComponent.size.y/4,
+      _mapComponent.size.x/4,
+      _mapComponent.size.y/4,
+    ));
+
     add(SPMapSplash(startGame: () {
       _mapWorld.add(_mapComponent); // 先将 _mapComponent 添加到 _mapWorld
     })); // 将 SPMapSplash 添加到 _mapWorld
@@ -75,7 +82,6 @@ class SPMap extends FlameGame with PanDetector, TapDetector {
   @override
   bool onPanUpdate(DragUpdateInfo info) {
     SPLogger.d("SPMap onPanUpdate ${-info.delta.global}");
-
     _cameraComponent.moveBy(-info.delta.global);
     return true;
   }
